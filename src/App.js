@@ -8,11 +8,11 @@ class App extends Component {
     return (
       <div>
         <a className="menu" tabIndex="0">
-          <svg className="hamburger-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <svg className="navicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z"/>
           </svg>
         </a>
-        <h1 className="heading"> Google Maps API + React </h1>
+        <h1 className="title"> Valencia monuments </h1>
         <MapContainer google={this.props.google} />
       </div>
     );

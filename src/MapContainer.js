@@ -7,18 +7,20 @@ export default class MapContainer extends Component {
 
   state = {
     locations: [
-      {name: "Catedral", location: {lat: 39.4755998, lng: -0.3774011}},
-      {name: "Oceanografico", location: {lat: 39.4530614 , lng: -0.349307}},
-      {name: "Ciudad de las Artes y las Ciencias", location: {lat: 39.4537702, lng: -0.350575}},
-      {name: "Hemisferic", location: {lat: 39.4556715, lng: -0.3543899}},
-      {name: "Palacio de las Artes Reina Sofia", location: {lat: 39.4583645, lng: -0.3583614}},
-      {name: "Veles e Vents", location: {lat: 39.4564518, lng: -0.34079}},
-      {name: "Llotja de la Seda", location: {lat: 39.472879, lng: -0.3800787}}
+      {name: "Catedral", location: {lat: 39.4755998, lng: -0.3774011}, nameWiki: "Catedral_de_Santa_María_de_Valencia"},
+      {name: "Oceanografico", location: {lat: 39.4530614 , lng: -0.349307}, nameWiki: "Oceanogràfic"},
+      {name: "Ciudad de las Artes y las Ciencias", location: {lat: 39.4537702, lng: -0.350575}, nameWiki: "Ciudad_de_las_Artes_y_las_Ciencias"},
+      {name: "Hemisferic", location: {lat: 39.4556715, lng: -0.3543899}, nameWiki: "L%27Hemisfèric"},
+      {name: "Palacio de las Artes Reina Sofia", location: {lat: 39.4583645, lng: -0.3583614}, nameWiki: "Palacio_de_las_Artes_Reina_Sofía"},
+      {name: "Veles e Vents", location: {lat: 39.4564518, lng: -0.34079}, nameWiki: "Veles_e_vents"},
+      {name: "Llotja de la Seda", location: {lat: 39.472879, lng: -0.3800787}, nameWiki:"Lonja_de_la_Seda"}
     ],
     query: '',
     markers: [],
     infowindow: new this.props.google.maps.InfoWindow(),
-    highlightedIcon: null
+    highlightedIcon: null,
+    articlesWikipedia : [],
+    FetchError : false
   }
 
   componentDidMount() {
@@ -97,7 +99,7 @@ export default class MapContainer extends Component {
 
   populateInfoWindow = (marker, infowindow) => {
     const defaultIcon = marker.getIcon()
-    const {highlightedIcon, markers} = this.state
+    const {highlightedIcon, markers,FetchError} = this.state
     // Check to make sure the infowindow is not already opened on this marker.
     if (infowindow.marker !== marker) {
       // reset the color of previous marker
@@ -108,6 +110,10 @@ export default class MapContainer extends Component {
       // change marker icon color of clicked marker
       marker.setIcon(highlightedIcon)
       infowindow.marker = marker
+      // Mensaje de error
+      if (FetchError) { 
+        alert('Oops! Something went wrong.')
+      }
       infowindow.setContent(`<h3>${marker.title} ${marker.position}</h3><h4>user likes it </h4>`)
       infowindow.open(this.map, marker)
       // Make sure the marker property is cleared if the infowindow is closed.
@@ -129,15 +135,38 @@ export default class MapContainer extends Component {
     return markerImage;
   }
 /*
-  peticionFETCH = (nameOfLocation) => {
-    let fetchedArticle = []
+  
+    //This function getting an article about location and save the html code in this.state.theArticle
+    peticionFETCH = (nameOfLocation) => {
+      
+      // We'll use this array to save the article and then pass it to the state 
+      let fetchedArticle = []
 
-    fetch(`https://en.wikipedia.org/w/api.php?origin=*&action=query&format=json&prop=extracts&titles=${nameOfLocation}&exintro=1`)
+      //Fetch the datas from Wiki using provided query
+      fetch(`https://en.wikipedia.org/w/api.php?origin=*&action=query&format=json&prop=extracts&titles=${nameOfLocation}&exintro=1`)
 
-    .then(result => {
-        return result.json();
-        console.log(result)
+      .then(result => {
+        return result.json()
        })
+
+       .then(resultArticle => {
+
+        // Extract the article and save it in fetchedArticle array
+        let article = resultArticle.query.pages[Object.keys(resultArticle.query.pages)[0]].extract;
+        fetchedArticle.push(article)
+
+       })
+
+       //Catch the errors
+       .catch(err => {
+         console.log(err)
+         this.setState({wikiError: true})
+       })
+
+       //pass the article to the state
+       this.setState({theArticle: fetchedArticle})
+
+    }
   }
 */
 
