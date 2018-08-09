@@ -1,4 +1,4 @@
-
+/* main page */
 .title {
   margin: 0;
   text-align: center;
@@ -25,12 +25,15 @@
   cursor: pointer;
 }
 
+/*  map style */
 .map {
-  margin: 0;
-  width: 85%;
-  height: 100vh;
+    margin: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 0;
 }
 
+/* List container markers*/
 .container {
   display: flex;
   flex-wrap: wrap;
@@ -40,9 +43,12 @@
   width: 15%;
   background-color: darkolivegreen;
   height: 100vh;
+  z-index: 9999;
+  display: block;
+  position: absolute;
 }
 
-.text-input input {
+.text-input input[role=search] {
   width: 100%;
   line-height: 0.8cm;
   padding: 8px 0;
@@ -56,49 +62,39 @@
   outline: 0;
 }
 
-.text-input ul {
+.list {
   list-style-type: none;
   padding-left: 0;
 }
 
-.text-input li {
+.list li {
   text-decoration: none;
   border-bottom: 2px solid white;
   color: white;
   line-height: 2em;
 }
 
-.text-input li:hover {
+.list li:hover {
   cursor: pointer;
+  color: darkblue;
+}
+
+.text-input-hidden{
+  display:none;
 }
 
 
-.error {
-  color: red;
-}
-
+/* Responsive App */
+/* max-width 800px*/
 @media screen and (max-width: 800px) {
-
   .text-input{
     width: 35%;
-    z-index: 9999;
-    display: block;
-    position: absolute;
   }  
-
-  .map {
-    margin: 0;
-    width: 100%;
-    height: 100vh;
-    z-index: 0;
-  }
 }
 
+/* max-width 400px*/
 @media screen and (max-width: 400px) {
   .title{
     padding-left: 35px;
   }
-}
-li:focus {
-  background-color: #9f8ef9;
 }

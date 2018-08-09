@@ -15,22 +15,24 @@ export default class MapContainer extends Component {
       {name: "Veles e Vents", location: {lat: 39.4564518, lng: -0.34079}, nameWiki: "Veles_e_vents"},
       {name: "Llotja de la Seda", location: {lat: 39.472879, lng: -0.3800787}, nameWiki:"Lonja_de_la_Seda"}
     ],
-    query: '',
-    markers: [],
-    infowindow: new this.props.google.maps.InfoWindow(),
-    highlightedIcon: null,
-    articlesWikipedia : [],
-    FetchError : false
+    query: '',    // search
+    markers: [],  // map markers
+    infowindow: new this.props.google.maps.InfoWindow(),  // infowindow from marker map
+    highlightedIcon: null,    // style click marker
+    articleWikipedia : '',    // article fetch wikipedia marker
+    FetchError : false      // error fethc wikipedia
   }
 
   componentDidMount() {
+    // show map
     this.loadMap()
+    // click list markers
     this.onclickLocation()
-    // Create a "highlighted location" marker color for when the user
-    // clicks on the marker.
+    // Create highlightedIcon style when click on marker
     this.setState({highlightedIcon: this.makeMarkerIcon('47d147')})
   }
 
+  // Load map
   loadMap() {
     if (this.props && this.props.google) {
       const {google} = this.props
@@ -39,6 +41,7 @@ export default class MapContainer extends Component {
       const mapRef = this.refs.map
       const node = ReactDOM.findDOMNode(mapRef)
 
+      // main style map
       const mapConfig = Object.assign({}, {
         center: {lat: 39.469908 , lng: -0.376288},
         zoom: 10,
@@ -53,6 +56,7 @@ export default class MapContainer extends Component {
 
   }
 
+  // list click markers
   onclickLocation = () => {
     const that = this
     const {infowindow} = this.state
@@ -63,7 +67,7 @@ export default class MapContainer extends Component {
         markers.findIndex(m => m.title.toLowerCase() === e.target.innerText.toLowerCase())
       that.populateInfoWindow(markers[markerInd], infowindow)
     }
-    document.querySelector('.locations-list').addEventListener('click', function (e) {
+    document.querySelector('.list').addEventListener('click', function (e) {
       if (e.target && e.target.nodeName === "LI") {
         displayInfowindow(e)
       }
@@ -83,7 +87,8 @@ export default class MapContainer extends Component {
       const marker = new google.maps.Marker({
         position: {lat: location.location.lat, lng: location.location.lng},
         map: this.map,
-        title: location.name
+        title: location.name,
+        nameWiki : location.nameWiki
       })
 
       marker.addListener('click', () => {
@@ -99,7 +104,7 @@ export default class MapContainer extends Component {
 
   populateInfoWindow = (marker, infowindow) => {
     const defaultIcon = marker.getIcon()
-    const {highlightedIcon, markers,FetchError} = this.state
+    const {highlightedIcon, markers,FetchError,articleWikipedia} = this.state
     // Check to make sure the infowindow is not already opened on this marker.
     if (infowindow.marker !== marker) {
       // reset the color of previous marker
@@ -110,11 +115,12 @@ export default class MapContainer extends Component {
       // change marker icon color of clicked marker
       marker.setIcon(highlightedIcon)
       infowindow.marker = marker
-      // Mensaje de error
+      // show alert fetch error
       if (FetchError) { 
-        alert('Oops! Something went wrong.')
+        alert('Request with Wikipedia went wrong.')
       }
-      infowindow.setContent(`<h3>${marker.title} ${marker.position}</h3><h4>user likes it </h4>`)
+      this.getArticle(marker);
+      infowindow.setContent(`<h1>${marker.title}</h1><h3> Location : ${marker.position}</h3><p>${articleWikipedia}</p>`)
       infowindow.open(this.map, marker)
       // Make sure the marker property is cleared if the infowindow is closed.
       infowindow.addListener('closeclick', function () {
@@ -122,6 +128,35 @@ export default class MapContainer extends Component {
       })
     }
   }
+
+
+  // get Article marker from wikipedia
+    getArticle(marker){   
+
+      //Fetch the datas from Wiki using provided query
+      fetch(`https://es.wikipedia.org/w/api.php?origin=*&action=query&format=json&prop=extracts&titles=${marker.nameWiki}&exintro=1`)
+      
+
+      .then(result => {
+        return result.json()
+       })
+    
+
+       .then(resultArticle => {
+        // Extract the article 
+        let article = resultArticle.query.pages[Object.keys(resultArticle.query.pages)[0]].extract;
+        this.setState({articleWikipedia: article})
+        //console.log(this.state.articleWikipedia)
+       })
+
+
+       .catch(err => {
+         console.log(err)
+         this.setState({FetchError: true})
+       })
+       
+    }
+
 
   makeMarkerIcon = (markerColor) => {
     const {google} = this.props
@@ -134,41 +169,7 @@ export default class MapContainer extends Component {
       new google.maps.Size(21, 34));
     return markerImage;
   }
-/*
-  
-    //This function getting an article about location and save the html code in this.state.theArticle
-    peticionFETCH = (nameOfLocation) => {
-      
-      // We'll use this array to save the article and then pass it to the state 
-      let fetchedArticle = []
 
-      //Fetch the datas from Wiki using provided query
-      fetch(`https://en.wikipedia.org/w/api.php?origin=*&action=query&format=json&prop=extracts&titles=${nameOfLocation}&exintro=1`)
-
-      .then(result => {
-        return result.json()
-       })
-
-       .then(resultArticle => {
-
-        // Extract the article and save it in fetchedArticle array
-        let article = resultArticle.query.pages[Object.keys(resultArticle.query.pages)[0]].extract;
-        fetchedArticle.push(article)
-
-       })
-
-       //Catch the errors
-       .catch(err => {
-         console.log(err)
-         this.setState({wikiError: true})
-       })
-
-       //pass the article to the state
-       this.setState({theArticle: fetchedArticle})
-
-    }
-  }
-*/
 
   render() {
     const {locations, query, markers, infowindow} = this.state
@@ -194,17 +195,17 @@ export default class MapContainer extends Component {
     return (
       <div>
         <div className="container">
-          <div className="text-input">
+        <div className="sidebar text-input text-input-hidden">
             <input role="search" type='text'
                    value={this.state.value}
                    onChange={this.handleValueChange}/>
-            <ul className="locations-list">{
+            <ul className="list">{
               markers.filter(m => m.getVisible()).map((m, i) =>
                 (<li key={i}>{m.title}</li>))
             }</ul>
           </div>
           <div role="application" className="map" ref="map">
-            loading map...
+            Please wait a moment ...
           </div>
         </div>
       </div>

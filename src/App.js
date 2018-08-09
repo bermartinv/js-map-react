@@ -4,6 +4,15 @@ import './App.css';
 import MapContainer from './MapContainer'
 
 class App extends Component {
+  componentDidMount() {
+    document.querySelector('.navicon').addEventListener('click', this.toggleSideBar)
+  }
+
+  toggleSideBar = () => {
+    document.querySelector('.sidebar').classList.toggle('text-input-hidden')
+  }
+
+
   render() {
     return (
       <div>
