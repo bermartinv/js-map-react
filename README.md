@@ -4,6 +4,10 @@ Google map Reacti with request Wikipedia
 ## About Valencia monuments App
 This App show us  important monuments from Valencia. We use React and google map API with google-map-react to develop this project.
 
+![alt text][imageApp]
+
+[imageApp]:https://github.com/bermartinv/js-map-react/images/Captura.PNG "Screen App"
+
 ## Links tools
 
 #### Links google map
