@@ -6,7 +6,7 @@ This App show us  important monuments from Valencia. We use React and google map
 
 ![alt text][imageApp]
 
-[imageApp]:https://github.com/bermartinv/js-map-react/images/Captura.PNG "Screen App"
+[imageApp]:https://github.com/bermartinv/js-map-react/blob/master/images/Captura.PNG "Screen App"
 
 ## Links tools
 
